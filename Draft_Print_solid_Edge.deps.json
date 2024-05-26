@@ -1,0 +1,53 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Draft_Print_solid_Edge/1.0.0": {
+        "dependencies": {
+          "Interop.SolidEdgeFramework": "1.0.0.0",
+          "Interop.SolidEdgeDraft": "1.0.0.0"
+        },
+        "runtime": {
+          "Draft_Print_solid_Edge.dll": {}
+        }
+      },
+      "Interop.SolidEdgeFramework/1.0.0.0": {
+        "runtime": {
+          "Interop.SolidEdgeFramework.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Interop.SolidEdgeDraft/1.0.0.0": {
+        "runtime": {
+          "Interop.SolidEdgeDraft.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Draft_Print_solid_Edge/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Interop.SolidEdgeFramework/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Interop.SolidEdgeDraft/1.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
