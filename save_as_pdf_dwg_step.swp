@@ -1,0 +1,135 @@
+'File Save As PDF DWG & STEP.swp -------------14-05-204.
+'c\ a.pundir.
+' Updated to set sub folder as Output folder for PDF/DWG files. Change as needed.
+
+Dim swApp           As SldWorks.SldWorks
+Dim swModel         As SldWorks.ModelDoc2
+Dim swDraw          As SldWorks.DrawingDoc
+Dim Filepath        As String
+Dim FileName        As String
+Dim boolstatus      As Boolean
+Dim longstatus      As Long
+Dim longwarnings    As Long
+Dim swCustProp      As CustomPropertyManager
+Dim bool            As Boolean
+Dim val             As String
+Dim valout          As String
+Dim Rev             As String
+Dim Descr           As String
+Dim Config          As String
+Dim swConfig        As SldWorks.Configuration
+Dim intstatus       As Integer
+Dim Value           As String
+
+Sub main()
+
+    Set swApp = Application.SldWorks
+    Dim doc As ModelDoc2
+    Dim docType As Long
+    Dim swView As SldWorks.View
+
+    ' Loop through all open documents
+    Set doc = swApp.GetFirstDocument
+    Do While Not doc Is Nothing
+        docType = doc.GetType
+        If docType = swDocDRAWING Then
+            Set swDraw = doc
+            
+            ' Save as PDF
+            ProcessDrawing swDraw, "PDF", ".pdf"
+
+            ' Save as DWG
+            ProcessDrawing swDraw, "DWG", ".dwg"
+
+            ' Save as STEP
+            ProcessPart swDraw, "STEP", ".step"
+
+            swDraw.Save
+        End If
+        Set doc = doc.GetNext
+    Loop
+
+End Sub
+
+Sub ProcessDrawing(swDraw As SldWorks.DrawingDoc, folderName As String, fileExtension As String)
+    Dim swModel As SldWorks.ModelDoc2
+    Dim swView As SldWorks.View
+    Dim swCustProp As CustomPropertyManager
+    Dim Filepath As String
+    Dim FileName As String
+    Dim valout As String
+    Dim Rev As String
+    Dim Descr As String
+    Dim Config As String
+    Dim swConfig As SldWorks.Configuration
+
+    Set swView = swDraw.GetFirstView
+    Set swView = swView.GetNextView
+    Set swModel = swView.ReferencedDocument
+    Set swConfig = swModel.GetActiveConfiguration
+    Config = swConfig.Name
+
+    Filepath = Left(swDraw.GetPathName, InStrRev(swDraw.GetPathName, "\"))
+
+    If Dir(Filepath & folderName, vbDirectory) = "" Then
+        MkDir Filepath & folderName
+    End If
+    Filepath = Filepath & folderName & "\"
+
+    Set swCustProp = swModel.Extension.CustomPropertyManager(Config)
+    swCustProp.Get2 "Revision", valout, Rev
+    swCustProp.Get2 "Description", valout, Descr
+
+    FileName = Mid(swDraw.GetPathName, InStrRev(swDraw.GetPathName, "\") + 1)
+    FileName = Left(FileName, Len(FileName) - 7) & fileExtension
+
+    swDraw.SaveAs3 Filepath & FileName, 0, 0
+End Sub
+
+Sub ProcessPart(swDraw As SldWorks.DrawingDoc, folderName As String, fileExtension As String)
+    Dim swModel As SldWorks.ModelDoc2
+    Dim swCustProp As CustomPropertyManager
+    Dim Filepath As String
+    Dim FileName As String
+    Dim valout As String
+    Dim Rev As String
+    Dim Descr As String
+    Dim Config As String
+    Dim swConfig As SldWorks.Configuration
+    Dim part As SldWorks.ModelDoc2
+    Dim myModelView As SldWorks.ModelView
+    Dim longstatus As Long
+
+    Filepath = Left(swDraw.GetPathName, InStrRev(swDraw.GetPathName, "\"))
+
+    If Dir(Filepath & folderName, vbDirectory) = "" Then
+        MkDir Filepath & folderName
+    End If
+    Filepath = Filepath & folderName & "\"
+
+    Set part = swApp.ActiveDoc
+    Set myModelView = part.ActiveView
+    myModelView.FrameState = swWindowState_e.swWindowMaximized
+    swApp.ActivateDoc2 "", False, longstatus
+    Set part = swApp.ActiveDoc
+    part.ClearSelection2 True
+    Set myModelView = part.ActiveView
+    myModelView.FrameState = swWindowState_e.swWindowMaximized
+
+    Set swModel = swDraw.GetFirstView.GetNextView.ReferencedDocument
+    Set swConfig = swModel.GetActiveConfiguration
+    Config = swConfig.Name
+    Set swCustProp = swModel.Extension.CustomPropertyManager(Config)
+    swCustProp.Get2 "Revision", valout, Rev
+    swCustProp.Get2 "Description", valout, Descr
+
+    FileName = Mid(part.GetPathName, InStrRev(part.GetPathName, "\") + 1)
+    FileName = Left(FileName, Len(FileName) - 7) & fileExtension
+
+    part.SaveAs3 Filepath & FileName, 0, 0
+
+    Set swPart = Nothing
+    Set part = Nothing
+    swApp.CloseDoc ""
+    Set part = swApp.ActiveDoc
+End Sub
